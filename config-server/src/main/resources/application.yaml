@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/piratE-oF-interneT/ecommerce-config-server
+          username: piratE-oF-interneT
+          password: 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
+          default-label: main
+
+  eureka:
+    client:
+      service-url:
+        default-zone: http://localhost:8761/eureka
+
+server:
+  port: 8888

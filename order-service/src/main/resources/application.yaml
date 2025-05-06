@@ -1,0 +1,27 @@
+resilience4j:
+  retry:
+    instances:
+      inventoryRetry:
+        max-attempts: 20
+        wait-duration: 5s
+
+  ratelimiter:
+    instances:
+      inventoryRateLimiter:
+        limitRefreshPeriod: 5s
+        limitForPeriod: 1
+        timeoutDuration: 1s
+
+  circuitbreaker:
+    instances:
+      inventoryCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 6
+        failureRateThreshold: 50
+        waitDurationInOpenState: 2s
+        permittedNumberOfCallsInHalfOpenState: 3
+        eventConsumerBufferSize: 10
+
+
