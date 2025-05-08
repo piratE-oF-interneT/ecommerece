@@ -11,13 +11,11 @@ public class ReportRequest {
 
         private String description;
 
-        private String location;
-
         private String category;
 
-        private Coordinates coordinates;
-
         private LocalDateTime reportedAt;
+
+        private String location;
 
         public String getTitle() {
                 return title;
@@ -35,14 +33,6 @@ public class ReportRequest {
                 this.description = description;
         }
 
-        public String getLocation() {
-                return location;
-        }
-
-        public void setLocation(String location) {
-                this.location = location;
-        }
-
         public String getCategory() {
                 return category;
         }
@@ -51,13 +41,6 @@ public class ReportRequest {
                 this.category = category;
         }
 
-        public Coordinates getCoordinates() {
-                return coordinates;
-        }
-
-        public void setCoordinates(Coordinates coordinates) {
-                this.coordinates = coordinates;
-        }
 
         public LocalDateTime getReportedAt() {
                 return reportedAt;
@@ -65,5 +48,13 @@ public class ReportRequest {
 
         public void setReportedAt(LocalDateTime reportedAt) {
                 this.reportedAt = reportedAt;
+        }
+
+        public String getLocation() {
+                return location;
+        }
+
+        public void setLocation(String location) {
+                this.location = location;
         }
 }

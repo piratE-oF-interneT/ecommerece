@@ -3,16 +3,22 @@ package com.app.hazard_aggregation_service.services.apiService;
 import com.app.hazard_aggregation_service.apiResponse.EarthquakeResponse;
 import com.app.hazard_aggregation_service.apiResponse.earthquake.EarthquakeFeature;
 import com.app.hazard_aggregation_service.configs.GeometryUtil;
+import com.app.hazard_aggregation_service.dto.EarthquakeDto;
 import com.app.hazard_aggregation_service.entities.EarthquakeRecord;
 import com.app.hazard_aggregation_service.exceptions.EarthquakeDataFetchException;
 import com.app.hazard_aggregation_service.repositories.EarthquakeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +32,9 @@ public class EarthquakeService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public void fetchData(){
         EarthquakeResponse response = restTemplate.getForObject(USGS_API_KEY, EarthquakeResponse.class);
@@ -62,6 +71,30 @@ public class EarthquakeService {
 
             }
         }
+    }
+
+    public List<EarthquakeDto> getEarthquakeData(){
+
+        List<EarthquakeRecord> earthquakeRecords = earthquakeRepository.findAll();
+
+        List<EarthquakeDto> earthquakes = new ArrayList<>();
+
+        for(EarthquakeRecord earthquakeRecord : earthquakeRecords){
+
+            EarthquakeDto earthquakeDto = new EarthquakeDto();
+            earthquakeDto.setDepth(earthquakeRecord.getDepth());
+            earthquakeDto.setLatitude(earthquakeRecord.getLocation().getY());
+            earthquakeDto.setLongitude(earthquakeRecord.getLocation().getX());
+            earthquakeDto.setMagnitude(earthquakeRecord.getMagnitude());
+            earthquakeDto.setRegion(earthquakeRecord.getRegion());
+            earthquakeDto.setSeverityLevel(earthquakeRecord.getSeverityLevel());
+            earthquakeDto.setTimestamp(earthquakeDto.getTimestamp());
+
+            earthquakes.add(earthquakeDto);
+        }
+
+        return  earthquakes;
+
     }
 
 

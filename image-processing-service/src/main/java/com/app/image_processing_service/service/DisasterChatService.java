@@ -1,114 +1,63 @@
 package com.app.image_processing_service.service;
 
-import com.app.image_processing_service.dto.ChatRequestDto;
-import com.app.image_processing_service.dto.ChatResponseDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DisasterChatService {
 
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
-
-    @Value("${gemini.api.url}")
-    private String geminiUrl;
-
     @Value("${gemini.api.key}")
     private String apiKey;
 
-    public DisasterChatService(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    private final RestTemplate restTemplate;
+
+    public DisasterChatService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
     }
 
-    public ChatResponseDto processEmergency(ChatRequestDto request) throws JsonProcessingException {
-        // 1. Build structured prompt
-        String prompt = buildPrompt(request);
+    public String getDisasterResponse(String promptText) {
+        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=" + apiKey;
 
-        // 2. Call Gemini API
-        String jsonResponse = callGeminiApi(prompt);
-
-        // 3. Parse and return response
-        return parseGeminiResponse(jsonResponse);
-    }
-
-    private String buildPrompt(ChatRequestDto request) {
-        return String.format("""
-            You are a disaster response AI. For this scenario:
-            Disaster Type: %s
-            Location: %s
-            Details: %s
-            
-            Provide response in this exact JSON format:
-            {
-              "botReply": "summary of the situation",
-              "severity": "low/medium/high/critical",
-              "actions": ["action1", "action2", "action3"],
-              "contacts": "contact information"
-            }
-            """,
-                request.getDisasterType(),
-                request.getCoordinates(),
-                request.getMessage()
+        // Request body
+        Map<String, Object> body = Map.of(
+                "contents", List.of(
+                        Map.of("parts", List.of(
+                                Map.of("text", promptText)
+                        ))
+                )
         );
-    }
 
-    private String callGeminiApi(String prompt) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
         try {
-            String requestBody = String.format("""
-                {
-                  "contents": [{
-                    "parts": [{"text": "%s"}]
-                  }]
-                }""", prompt.replace("\"", "\\\""));
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
+            Map<String, Object> responseBody = response.getBody();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("x-goog-api-key", apiKey);
-
-            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    geminiUrl,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
-            );
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("API request failed with status: " + response.getStatusCode());
+            if (responseBody == null || !responseBody.containsKey("candidates")) {
+                return "Empty or invalid response from Gemini.";
             }
 
-            return response.getBody();
-        } catch (RestClientException e) {
-            throw new RuntimeException("Failed to call Gemini API", e);
+            List<Map<String, Object>> candidates = (List<Map<String, Object>>) responseBody.get("candidates");
+            if (!candidates.isEmpty()) {
+                Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+                List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+                if (!parts.isEmpty()) {
+                    return parts.get(0).get("text").toString();
+                }
+            }
+
+            return "Gemini returned no valid content.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error calling Gemini: " + e.getMessage();
         }
-    }
-
-    private ChatResponseDto parseGeminiResponse(String jsonResponse) throws JsonProcessingException {
-        JsonNode root = objectMapper.readTree(jsonResponse);
-        JsonNode content = root.path("candidates").get(0).path("content").path("parts").get(0).path("text");
-        JsonNode responseNode = objectMapper.readTree(content.asText());
-
-        // Convert actions array to List<String>
-        List<String> actions = new ArrayList<>();
-        responseNode.path("actions").forEach(node -> actions.add(node.asText()));
-
-        return new ChatResponseDto(
-                responseNode.path("botReply").asText(),
-                responseNode.path("severity").asText(),
-                actions,
-                responseNode.path("contacts").asText()
-        );
     }
 }

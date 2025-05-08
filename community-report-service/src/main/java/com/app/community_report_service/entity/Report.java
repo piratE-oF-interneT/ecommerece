@@ -4,6 +4,7 @@ package com.app.community_report_service.entity;
 import com.app.community_report_service.enums.Status;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 
@@ -19,13 +20,16 @@ public class Report {
 
     private String description;
 
-    private String location;
-
     private String category;
 
-    private Coordinates coordinates;
-
     private String reporterId;
+
+    private String location;
+
+
+    @Lob
+    @Column(length = 1000000)
+    private byte[] imageBytes;
 
     @ManyToOne
     private Responder assignedResponder;
@@ -38,25 +42,53 @@ public class Report {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    private String imageUrl;
+
+    @Autowired
+    private String path;
+
+
 
 
     public Report(){
 
     }
 
-    public Report(Long id, String title, String description, String location, String category, Coordinates coordinates, LocalDateTime reportedAt, Status status, String imageUrl , String reporterId , Responder responder) {
+    public Report(Long id, String title, String description, String category, String reporterId, String location, byte[] imageBytes, Responder assignedResponder, LocalDateTime reportedAt, Status status, String path) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.location = location;
         this.category = category;
-        this.coordinates = coordinates;
+        this.reporterId = reporterId;
+        this.location = location;
+        this.imageBytes = imageBytes;
+        this.assignedResponder = assignedResponder;
         this.reportedAt = reportedAt;
         this.status = status;
-        this.imageUrl = imageUrl;
-        this.reporterId = reporterId;
-        this.assignedResponder = responder;
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
+
+    public void setImageBytes(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
     }
 
     public Long getId() {
@@ -83,13 +115,6 @@ public class Report {
         this.description = description;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
 
     public String getCategory() {
         return category;
@@ -99,13 +124,7 @@ public class Report {
         this.category = category;
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
 
     public LocalDateTime getReportedAt() {
         return reportedAt;
@@ -121,14 +140,6 @@ public class Report {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public String getReporterId() {

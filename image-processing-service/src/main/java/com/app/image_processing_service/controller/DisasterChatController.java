@@ -1,27 +1,25 @@
 package com.app.image_processing_service.controller;
 
-import com.app.image_processing_service.dto.ChatRequestDto;
-import com.app.image_processing_service.dto.ChatResponseDto;
 import com.app.image_processing_service.service.DisasterChatService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/disaster-chat")
-@RequiredArgsConstructor
+@RequestMapping("/gemini")
 public class DisasterChatController {
 
-    private final DisasterChatService chatService;
+    @Autowired
+    private DisasterChatService geminiService;
 
-    @PostMapping
-    public ResponseEntity<ChatResponseDto> handleDisasterQuery(
-            @Valid @RequestBody ChatRequestDto request) throws JsonProcessingException {
-        return ResponseEntity.ok(chatService.processEmergency(request));
+
+
+    @GetMapping("/ask")
+    public ResponseEntity<String> ask(@RequestParam String query, @RequestParam String location) {
+        String prompt = "You are a disaster management assistant.\nLocation: " + location + "\nQuery: " + query;
+        return ResponseEntity.ok(geminiService.getDisasterResponse(prompt));
     }
 }

@@ -2,6 +2,7 @@ package com.app.community_report_service.services;
 
 
 import com.app.community_report_service.dto.ReportResponse;
+import com.app.community_report_service.ecceptions.ResourceNotFoundException;
 import com.app.community_report_service.entity.Report;
 import com.app.community_report_service.entity.Responder;
 import com.app.community_report_service.enums.Status;
@@ -26,7 +27,7 @@ public class ResponderService {
 
         Report report = reportRepository.findById(reportId).orElseThrow(()-> new ResourceNotFoundException("report not found with this id"));
 
-        Responder responder = responderRepository.findById(responderId).orElseThrow(() -> "responder not found with id");
+        Responder responder = responderRepository.findById(responderId).orElseThrow(() -> new ResourceNotFoundException("responder not found with id"));
         report.setStatus(Status.RESOLVED);
         responder.setAvailable(true);
 

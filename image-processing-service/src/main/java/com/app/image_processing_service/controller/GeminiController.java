@@ -1,12 +1,10 @@
 package com.app.image_processing_service.controller;
 
+import com.app.image_processing_service.dto.MissingPersonDo;
 import com.app.image_processing_service.service.GeminiImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -49,5 +47,26 @@ public class GeminiController {
             return ResponseEntity.status(500)
                     .body(Map.of("match", false));
         }
+    }
+
+    @PostMapping("/report/analyze")
+    public String analyzeReport(
+            @RequestBody byte[] imageBytes,
+            @RequestParam(value = "prompt", defaultValue = "Describe this image") String prompt) {
+        return geminiService.analyzeImage(imageBytes, prompt);
+    }
+
+    @GetMapping("/find/person")
+    public boolean findMissingPerson(
+            @RequestBody MissingPersonDo missingPersonDo){
+
+        return geminiService.compareImages(missingPersonDo.getImage1(),missingPersonDo.getImage2());
+    }
+
+    @PostMapping("/rescue")
+    public String rescue(@RequestBody byte[] image , String prompt){
+       String response =  geminiService.analyzeImage(image,prompt);
+
+       return response;
     }
 }

@@ -11,10 +11,10 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Configuration
+
 public class GeminiConfig {
 
-    @Bean
+
     public GenerativeModel generativeModel() throws IOException {
         // Load credentials from classpath
         InputStream credentialsStream = new ClassPathResource("disaster.json").getInputStream();

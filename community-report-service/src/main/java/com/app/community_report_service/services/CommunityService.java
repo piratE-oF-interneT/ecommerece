@@ -3,6 +3,7 @@ package com.app.community_report_service.services;
 
 import com.app.community_report_service.dto.ReportRequest;
 import com.app.community_report_service.dto.ReportResponse;
+import com.app.community_report_service.ecceptions.InternalServerException;
 import com.app.community_report_service.entity.Report;
 import com.app.community_report_service.enums.Status;
 import com.app.community_report_service.repository.ReportRepository;
@@ -32,18 +33,13 @@ public class CommunityService {
     private ReportRepository reportRepository;
 
     @Transactional
-    public String submitReport(ReportRequest reportRequest , MultipartFile image , String reportedId) throws IOException {
-        String imagePath;
-        try {
-            imagePath = saveImage(image,"uploads/images");
+    public String submitReport(ReportRequest reportRequest , MultipartFile image ,String imagePath, String reportedId) throws IOException {
 
-        }
-        catch (IOException ioException){
-            throw new InternalServerException("internal server error");
-        }
+
 
         Report report = modelMapper.map(reportRequest, Report.class);
-        report.setImageUrl(imagePath);
+        report.setPath(imagePath);
+        report.setImageBytes(image.getBytes());
         report.setStatus(Status.PENDING);
         report.setReporterId(reportedId);
 

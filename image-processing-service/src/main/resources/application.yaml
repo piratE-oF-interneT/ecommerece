@@ -1,5 +1,0 @@
-gcp:
-  vertexai:
-    project-id: hackathon-458919
-    location: us-central1
-    credentials-path: /home/kp/codes/hackathon-458919-691ad2ba0018.json

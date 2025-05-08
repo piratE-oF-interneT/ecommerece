@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 
 public class ReportResponse {
 
+    private Long reportId;
+
     private String title;
 
     private String description;
@@ -17,12 +19,17 @@ public class ReportResponse {
     private String location;
 
     private String category;
-
-    private Coordinates coordinates;
-
     private LocalDateTime reportedAt;
 
     private Status status;
+
+    public Long getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Long reportId) {
+        this.reportId = reportId;
+    }
 
     public String getTitle() {
         return title;
@@ -56,13 +63,6 @@ public class ReportResponse {
         this.category = category;
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
 
     public LocalDateTime getReportedAt() {
         return reportedAt;

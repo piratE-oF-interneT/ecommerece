@@ -1,0 +1,13 @@
+#spring:
+#  mvc:
+#    cors:
+#      enabled: true
+#      allowed-origins:
+#        - "http://localhost:5173"
+#        - "http://127.0.0.1:5173"
+#        - "https://your-production-domain.com"
+#      allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+#      allowed-headers: Origin, Content-Type, Accept, Authorization, X-Requested-With, Access-Control-Allow-Origin
+#      exposed-headers: Authorization, Content-Disposition, Access-Control-Allow-Origin
+#      allow-credentials: true
+#      max-age: 3600

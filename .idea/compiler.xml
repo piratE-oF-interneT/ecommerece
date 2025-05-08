@@ -11,25 +11,25 @@
         <module name="api-gateway" />
         <module name="config-server" />
       </profile>
-      <profile name="Annotation profile for inventory-service" enabled="true">
+      <profile name="Annotation profile for order-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
-        <module name="inventory-service" />
         <module name="order-service" />
+        <module name="inventory-service" />
       </profile>
-      <profile name="Annotation profile for image-processing-service" enabled="true">
+      <profile name="Annotation profile for resource-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
-        <module name="image-processing-service" />
         <module name="resource-service" />
+        <module name="image-processing-service" />
         <module name="hazard-aggregation-service" />
         <module name="community-report-service" />
         <module name="auth-service" />

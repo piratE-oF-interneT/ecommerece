@@ -16,7 +16,7 @@ public class GeminiImageService {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
-    @Value("${gemini.api.model:gemini-1.5-flash}") // Default to 1.5 Flash
+    @Value("${gemini.api.model}") // Default to 1.5 Flash
     private String modelName;
 
     @Autowired
